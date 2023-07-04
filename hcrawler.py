@@ -14,7 +14,7 @@ print(Fore.LIGHTRED_EX + """
         ▐   ▐    ▐                                          ▐         ▐                  
 \n""" + Fore.LIGHTGREEN_EX)
 
-parser = argparse.ArgumentParser(description='A detector de links and emails in websites', usage='./hcrawler.py -d domain -l False -o output.txt')
+parser = argparse.ArgumentParser(description='A detector de links and emails in websites', usage='./hcrawler.py -d domain -l False -o output.txt -e True -c False -u "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"')
 parser.add_argument('-d', '--domain', action='store', dest='hosts', help='domain', required=True)
 parser.add_argument('-u', '--user-agent', action='store', dest='agent', help='user-agent', default="Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0")
 parser.add_argument('--cookies', action='store', dest='cookie', help='Cookies')
@@ -68,7 +68,9 @@ def get_links(html):
 def get_emails(html):
     emails = re.findall(r"\w[\w\.]+@\w[\w\.]+\w", html)
     return emails
-
+def filter_links(file):
+     links = re.findall(r"\w+://\w+[\w\./]+", file)
+     return links
 def crawl():
     if arguments.links == 'True':
                     print('[*] Mode link activated\n')
@@ -141,4 +143,22 @@ if __name__ == "__main__":
         crawlb()
         print('[*] Done!!!\n')
     print(Fore.RESET + '-' * 65)
-
+    if arguments.output:
+         file.close()
+         arq = open(arguments.output, 'r')
+         a = arq.read()
+         
+         arqg = get_emails(a)
+         arql = filter_links(a)
+         
+         arq.close()
+         end = open(arguments.output, 'w')
+        
+         
+         end.write('Links:\n\n')
+         for link in arql:
+            end.write(f'{link}\n')
+         end.write('\nEmails:\n\n')
+         for email in arqg:
+            end.write(f'{email}\n')
+        
